@@ -1,0 +1,20 @@
+---q1----easy----
+SELECT candidate_id
+FROM candidates
+WHERE skill IN ('Python', 'Tableau', 'PostgreSQL')
+GROUP BY candidate_id
+HAVING COUNT(skill) = 3
+ORDER BY candidate_id;
+
+---q2----medium----
+SELECT p.page_id
+FROM pages p
+LEFT JOIN page_likes pl
+ON p.page_id = pl.page_id
+WHERE pl.page_id IS NULL
+ORDER BY p.page_id;
+
+---q3----hard----
+SELECT part, assembly_step
+FROM parts_assembly
+WHERE finish_date IS NULL;

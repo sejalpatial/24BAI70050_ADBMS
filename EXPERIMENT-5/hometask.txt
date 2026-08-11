@@ -1,0 +1,39 @@
+-----q1
+SELECT h.hacker_id, h.name, COUNT(c.challenge_id) AS total_challenges
+FROM Hackers h
+JOIN Challenges c ON h.hacker_id = c.hacker_id
+GROUP BY h.hacker_id, h.name
+HAVING COUNT(c.challenge_id) = (
+    -- Condition 1: Include if they created the maximum number of challenges
+    SELECT MAX(sub1.challenge_count)
+    FROM (
+        SELECT COUNT(challenge_id) AS challenge_count
+        FROM Challenges
+        GROUP BY hacker_id
+    ) sub1
+)
+OR COUNT(c.challenge_id) IN (
+    -- Condition 2: Include if the number of challenges they created is unique
+    SELECT sub2.challenge_count
+    FROM (
+        SELECT COUNT(challenge_id) AS challenge_count
+        FROM Challenges
+        GROUP BY hacker_id
+    ) sub2
+    GROUP BY sub2.challenge_count
+    HAVING COUNT(sub2.challenge_count) = 1
+)
+ORDER BY total_challenges DESC, h.hacker_id;
+
+
+---q2
+SELECT h.hacker_id, h.name, SUM(t1.max_score) as total_score
+FROM Hackers h
+JOIN (
+    SELECT hacker_id, challenge_id, MAX(score) as max_score
+    FROM Submissions
+    GROUP BY hacker_id, challenge_id
+) t1 ON h.hacker_id = t1.hacker_id
+GROUP BY h.hacker_id, h.name
+HAVING total_score > 0
+ORDER BY total_score DESC, h.hacker_id ASC;
